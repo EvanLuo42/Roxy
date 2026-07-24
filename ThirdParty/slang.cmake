@@ -1,0 +1,21 @@
+set(SLANG_ENABLE_DXIL FALSE CACHE BOOL "" FORCE)
+set(SLANG_ENABLE_GFX FALSE CACHE BOOL "" FORCE)
+set(SLANG_ENABLE_SLANGD FALSE CACHE BOOL "" FORCE)
+set(SLANG_ENABLE_SLANGI FALSE CACHE BOOL "" FORCE)
+set(SLANG_ENABLE_SLANG_PROXY FALSE CACHE BOOL "" FORCE)
+set(SLANG_ENABLE_TESTS FALSE CACHE BOOL "" FORCE)
+set(SLANG_ENABLE_EXAMPLES FALSE CACHE BOOL "" FORCE)
+set(SLANG_ENABLE_REPLAYER FALSE CACHE BOOL "" FORCE)
+set(SLANG_ENABLE_SPLIT_DEBUG_INFO FALSE CACHE BOOL "" FORCE)
+set(SLANG_SLANG_LLVM_FLAVOR DISABLE CACHE STRING "" FORCE)
+
+if(APPLE)
+    # slang repeats static archives on its link lines; silence Xcode 15+ ld
+    add_link_options(-Wl,-no_warn_duplicate_libraries)
+endif()
+
+roxy_add_dependency(
+        slang
+        GIT_REPOSITORY https://github.com/shader-slang/slang.git
+        GIT_TAG v2026.14
+)
