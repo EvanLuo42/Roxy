@@ -8,11 +8,11 @@ set(SLANG_ENABLE_EXAMPLES FALSE CACHE BOOL "" FORCE)
 set(SLANG_ENABLE_REPLAYER FALSE CACHE BOOL "" FORCE)
 set(SLANG_ENABLE_SPLIT_DEBUG_INFO FALSE CACHE BOOL "" FORCE)
 set(SLANG_SLANG_LLVM_FLAVOR DISABLE CACHE STRING "" FORCE)
+set(SLANG_ENABLE_SLANG_RHI FALSE CACHE BOOL "" FORCE)
 
-if(APPLE)
-    # slang repeats static archives on its link lines; silence Xcode 15+ ld
+if (APPLE)
     add_link_options(-Wl,-no_warn_duplicate_libraries)
-endif()
+endif ()
 
 roxy_add_dependency(
         slang

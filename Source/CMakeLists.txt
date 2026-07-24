@@ -1,6 +1,9 @@
 add_subdirectory(RenderGraphs)
 add_subdirectory(RenderPasses)
 add_subdirectory(Roxy)
+if (ROXY_BUILD_TESTS)
+    add_subdirectory(Tests)
+endif ()
 add_subdirectory(Viewer)
 
 set(ROXY_SHADER_DIR ${CMAKE_CURRENT_SOURCE_DIR})
