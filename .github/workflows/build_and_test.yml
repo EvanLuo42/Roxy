@@ -20,7 +20,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: lukka/get-cmake@latest
 
@@ -31,6 +31,8 @@ jobs:
           sudo apt-get install -y libwayland-dev libxkbcommon-dev xorg-dev
 
       - name: Configure
+        env:
+          SLANG_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: cmake --preset ${{ matrix.preset }}
 
       - name: Build
