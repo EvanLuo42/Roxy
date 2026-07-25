@@ -24,6 +24,14 @@ jobs:
 
       - uses: lukka/get-cmake@latest
 
+      - name: Cache build directory
+        uses: actions/cache@v6
+        with:
+          path: build/${{ matrix.preset }}
+          key: build-${{ matrix.preset }}-${{ hashFiles('Source/**', 'ThirdParty/**', 'cmake/**', 'CMakeLists.txt', 'CMakePresets.json') }}
+          restore-keys: |
+            build-${{ matrix.preset }}-
+
       - name: Install Linux dependencies
         if: runner.os == 'Linux'
         run: |
