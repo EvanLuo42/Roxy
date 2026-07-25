@@ -2,7 +2,17 @@
 
 #include <slang-rhi.h>
 
+#if SLANG_WINDOWS_FAMILY
+#define GLFW_EXPOSE_NATIVE_WIN32
+#elif SLANG_LINUX_FAMILY
+#define GLFW_EXPOSE_NATIVE_X11
+#elif SLANG_APPLE_FAMILY
+#define GLFW_EXPOSE_NATIVE_COCOA
+#endif
 #include <GLFW/glfw3.h>
+#include <GLFW/glfw3native.h>
+
+#include <slang-rhi/glfw.h>
 
 #include <string>
 
@@ -32,8 +42,8 @@ public:
     {
     public:
         virtual ~ICallbacks() = default;
-        virtual void OnResize(uint32_t width, uint32_t height) = 0;
-        virtual void OnClose() = 0;
+        virtual void OnResize(uint32_t width, uint32_t height) {}
+        virtual void OnClose() {}
     };
 
     explicit Window(Desc desc);
@@ -44,6 +54,8 @@ public:
 
     Window(const Window &) = delete;
     Window &operator=(const Window &) = delete;
+
+    void SetCallbacks(ICallbacks *callbacks);
 
     void OnUpdate();
 
@@ -63,8 +75,14 @@ private:
     void Init();
     void Shutdown();
 
+    static void HandleFramebufferSize(GLFWwindow *window, int width, int height);
+    static void HandleWindowClose(GLFWwindow *window);
+
     GLFWwindow *_window = nullptr;
+    ICallbacks *_callbacks = nullptr;
     Desc _desc;
+    int _width = 0;
+    int _height = 0;
 };
 
 } // namespace Roxy

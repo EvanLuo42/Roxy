@@ -1,39 +1,23 @@
 #include "Window.h"
 
+#include <stdexcept>
 #include <utility>
-
-#include <slang-rhi/glfw.h>
 
 namespace Roxy
 {
-Window::Window(Desc desc) : _desc(std::move(desc))
-{
-    Init();
-}
+Window::Window(Desc desc) : _desc(std::move(desc)) { Init(); }
 
-Window::Window()
-{
-    Init();
-}
+Window::Window() { Init(); }
 
-Window::~Window()
-{
-    Shutdown();
-}
+Window::~Window() { Shutdown(); }
 
-void Window::OnUpdate()
-{
-    glfwPollEvents();
-}
+void Window::SetCallbacks(ICallbacks *callbacks) { _callbacks = callbacks; }
 
-bool Window::ShouldClose() const
-{
-    return glfwWindowShouldClose(_window);
-}
+void Window::OnUpdate() { glfwPollEvents(); }
 
-void Window::Close()
-{
-}
+bool Window::ShouldClose() const { return glfwWindowShouldClose(_window); }
+
+void Window::Close() { glfwSetWindowShouldClose(_window, GLFW_TRUE); }
 
 void Window::SetTitle(const std::string &title)
 {
@@ -41,25 +25,13 @@ void Window::SetTitle(const std::string &title)
     glfwSetWindowTitle(_window, title.c_str());
 }
 
-int Window::GetWidth() const
-{
-    return _desc.Width;
-}
+int Window::GetWidth() const { return _width; }
 
-int Window::GetHeight() const
-{
-    return _desc.Height;
-}
+int Window::GetHeight() const { return _height; }
 
-rhi::WindowHandle Window::CreateWindowHandle() const
-{
-    return rhi::getWindowHandleFromGLFW(_window);
-}
+rhi::WindowHandle Window::CreateWindowHandle() const { return rhi::getWindowHandleFromGLFW(_window); }
 
-GLFWwindow *Window::GetNativeWindow() const
-{
-    return _window;
-}
+GLFWwindow *Window::GetNativeWindow() const { return _window; }
 
 void Window::Init()
 {
@@ -81,7 +53,11 @@ void Window::Init()
         throw std::runtime_error("Failed creating GLFW window");
     }
 
+    glfwGetFramebufferSize(_window, &_width, &_height);
+
     glfwSetWindowUserPointer(_window, this);
+    glfwSetFramebufferSizeCallback(_window, &Window::HandleFramebufferSize);
+    glfwSetWindowCloseCallback(_window, &Window::HandleWindowClose);
 }
 
 void Window::Shutdown()
@@ -92,6 +68,28 @@ void Window::Shutdown()
     }
 
     glfwTerminate();
+}
+
+void Window::HandleFramebufferSize(GLFWwindow *window, int width, int height)
+{
+    auto *self = static_cast<Window *>(glfwGetWindowUserPointer(window));
+
+    self->_width = width;
+    self->_height = height;
+
+    if (self->_callbacks)
+    {
+        self->_callbacks->OnResize(static_cast<uint32_t>(width), static_cast<uint32_t>(height));
+    }
+}
+
+void Window::HandleWindowClose(GLFWwindow *window)
+{
+
+    if (auto *self = static_cast<Window *>(glfwGetWindowUserPointer(window)); self->_callbacks)
+    {
+        self->_callbacks->OnClose();
+    }
 }
 
 } // namespace Roxy
