@@ -10,6 +10,8 @@ add_library(RoxyRuntime STATIC
 
 target_include_directories(RoxyRuntime PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
-target_link_libraries(RoxyRuntime PRIVATE slang-rhi slang glfw)
+target_link_libraries(RoxyRuntime
+        PUBLIC slang-rhi slang glfw
+)
 
 add_library(Roxy::Runtime ALIAS RoxyRuntime)
